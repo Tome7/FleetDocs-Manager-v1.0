@@ -22,7 +22,7 @@ export class ExcelExporter {
   }
 
   addSheet(config: ExcelSheet, includeRowNumber: boolean = true) {
-    // Prepare data with headers - add "Nº" column for row enumeration
+    // Prepare data with headers - add sequential "Nº" column for row enumeration (always first column)
     const headers = includeRowNumber 
       ? ['Nº', ...config.columns.map(col => col.header)]
       : config.columns.map(col => col.header);
