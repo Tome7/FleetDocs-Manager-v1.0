@@ -463,4 +463,3 @@ export const exportComprehensiveReport = (vehicles: any[], drivers: any[]) => {
 
   exporter.download('Relatorio_Geral');
 };
-
