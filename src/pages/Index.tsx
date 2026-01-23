@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { vehiclesApi, alertsApi, driversApi } from "@/lib/api";
 import { DashboardStats } from "@/components/DashboardStats";
+import { DashboardCharts } from "@/components/DashboardCharts";
 import { SearchBar } from "@/components/SearchBar";
 import { VehicleCard } from "@/components/VehicleCard";
 import { VehicleForm } from "@/components/VehicleForm";
@@ -11,13 +12,12 @@ import { DriverProfileDialog } from "@/components/DriverProfileDialog";
 import { VehicleAssignmentDialog } from "@/components/VehicleAssignmentDialog";
 import { AlertsPanel } from "@/components/AlertsPanel";
 import { ReportsDialog } from "@/components/ReportsDialog";
-import { PostTripInspectionForm } from "@/components/PostTripInspectionForm";
 import { PostTripInspectionList } from "@/components/PostTripInspectionList";
 import { DocumentDeliveryTab } from "@/components/DocumentDeliveryTab";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Bell, Menu, User, LogOut, Loader2, FileText, Car, Users, ClipboardCheck, FileStack } from "lucide-react";
+import { Plus, Bell, Menu, User, LogOut, Loader2, FileText, Car, Users, ClipboardCheck, FileStack, BarChart3, ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
@@ -49,6 +49,7 @@ const Index = () => {
   const [showVehicleForm, setShowVehicleForm] = useState(false);
   const [showDriverForm, setShowDriverForm] = useState(false);
   const [showReports, setShowReports] = useState(false);
+  const [showCharts, setShowCharts] = useState(false);
   
   const [searchTerm, setSearchTerm] = useState("");
   const [vehicleStatusFilter, setVehicleStatusFilter] = useState("all");
@@ -216,6 +217,25 @@ const Index = () => {
       <main className="container mx-auto px-4 py-6">
         {/* Stats Section */}
         <DashboardStats vehicles={vehicles || []} />
+
+        {/* Charts Toggle Button */}
+        <div className="mb-4">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setShowCharts(!showCharts)}
+            className="flex items-center gap-2"
+          >
+            <BarChart3 className="h-4 w-4" />
+            {showCharts ? t('dashboard.hideCharts') : t('dashboard.showCharts')}
+            {showCharts ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </Button>
+        </div>
+
+        {/* Charts Section - Collapsible */}
+        {showCharts && (
+          <DashboardCharts vehicles={vehicles || []} />
+        )}
 
         {/* Alerts Section */}
         {alerts && alerts.length > 0 && (

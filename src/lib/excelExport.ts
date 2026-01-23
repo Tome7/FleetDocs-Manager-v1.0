@@ -5,14 +5,51 @@ interface ExcelColumn {
   header: string;
   key: string;
   width?: number;
-  format?: 'date' | 'currency' | 'number' | 'text';
+  format?: 'date' | 'currency' | 'number' | 'text' | 'status';
 }
 
 interface ExcelSheet {
   name: string;
   columns: ExcelColumn[];
   data: any[];
+  sortByStatus?: boolean; // Sort by document status (expired first)
 }
+
+// Helper function to determine document status based on expiry date
+const getDocumentStatusInfo = (expiryDate: string | null | undefined): { status: string; priority: number; label: string } => {
+  if (!expiryDate) {
+    return { status: 'valid', priority: 3, label: '✓ Válido' };
+  }
+
+  let expiry: Date;
+  if (typeof expiryDate === 'string' && expiryDate.includes('/')) {
+    const parts = expiryDate.split('/');
+    expiry = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+  } else {
+    expiry = new Date(expiryDate);
+  }
+
+  if (isNaN(expiry.getTime())) {
+    return { status: 'valid', priority: 3, label: '✓ Válido' };
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const diffTime = expiry.getTime() - today.getTime();
+  const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (daysRemaining < 0) {
+    return { status: 'expired', priority: 1, label: `⚠️ EXPIRADO (${Math.abs(daysRemaining)} dias)` };
+  }
+  if (daysRemaining <= 7) {
+    return { status: 'critical', priority: 1, label: `🔴 URGENTE (${daysRemaining} dias)` };
+  }
+  if (daysRemaining <= 30) {
+    return { status: 'warning', priority: 2, label: `🟡 A Expirar (${daysRemaining} dias)` };
+  }
+  return { status: 'valid', priority: 3, label: '✓ Válido' };
+};
 
 export class ExcelExporter {
   private workbook: XLSX.WorkBook;
@@ -27,11 +64,27 @@ export class ExcelExporter {
       ? ['Nº', ...config.columns.map(col => col.header)]
       : config.columns.map(col => col.header);
     
-    const formattedData = config.data.map((row, index) => {
+    // Sort data by status priority if requested (expired/critical first)
+    let sortedData = [...config.data];
+    if (config.sortByStatus) {
+      sortedData.sort((a, b) => {
+        const statusA = getDocumentStatusInfo(a.expiry_date);
+        const statusB = getDocumentStatusInfo(b.expiry_date);
+        return statusA.priority - statusB.priority;
+      });
+    }
+    
+    const formattedData = sortedData.map((row, index) => {
       const rowData = config.columns.map(col => {
         const value = row[col.key];
         
         // Format based on type
+        if (col.format === 'status') {
+          // Special handling for status column - show visual indicator
+          const statusInfo = getDocumentStatusInfo(row.expiry_date);
+          return statusInfo.label;
+        }
+        
         if (!value && value !== 0) return '';
         
         switch (col.format) {
@@ -170,7 +223,7 @@ export const exportDocumentsReport = (documents: any[]) => {
     { label: 'Data de Exportação', value: format(new Date(), 'dd/MM/yyyy HH:mm') }
   ]);
 
-  // All documents
+  // All documents - with status column and sorted by priority
   exporter.addSheet({
     name: 'Todos os Documentos',
     columns: [
@@ -181,10 +234,11 @@ export const exportDocumentsReport = (documents: any[]) => {
       { header: 'Modelo', key: 'model', width: 25 },
       { header: 'Departamento', key: 'department', width: 20 },
       { header: 'Data de Validade', key: 'expiry_date', width: 18, format: 'date' },
-      { header: 'Estado', key: 'current_status', width: 15 },
+      { header: '⚡ Estado', key: 'status_indicator', width: 28, format: 'status' },
       { header: 'Localização', key: 'storage_location', width: 25 }
     ],
-    data: documents
+    data: documents,
+    sortByStatus: true
   });
 
   // Expired documents only
@@ -197,9 +251,11 @@ export const exportDocumentsReport = (documents: any[]) => {
         { header: 'Nome do Documento', key: 'file_name', width: 30 },
         { header: 'Veículo', key: 'license_plate', width: 15 },
         { header: 'Data de Validade', key: 'expiry_date', width: 18, format: 'date' },
+        { header: '⚡ Estado', key: 'status_indicator', width: 28, format: 'status' },
         { header: 'Departamento', key: 'department', width: 20 }
       ],
-      data: expiredDocuments
+      data: expiredDocuments,
+      sortByStatus: true
     });
   }
 
@@ -213,9 +269,11 @@ export const exportDocumentsReport = (documents: any[]) => {
         { header: 'Nome do Documento', key: 'file_name', width: 30 },
         { header: 'Veículo', key: 'license_plate', width: 15 },
         { header: 'Data de Validade', key: 'expiry_date', width: 18, format: 'date' },
+        { header: '⚡ Estado', key: 'status_indicator', width: 28, format: 'status' },
         { header: 'Departamento', key: 'department', width: 20 }
       ],
-      data: expiringDocuments
+      data: expiringDocuments,
+      sortByStatus: true
     });
   }
 

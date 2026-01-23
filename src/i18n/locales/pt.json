@@ -65,7 +65,13 @@
     "totalVehicles": "Total de Veículos",
     "validDocuments": "Documentos Válidos",
     "nearExpiry": "Perto de Expirar",
-    "expired": "Expirados"
+    "expired": "Expirados",
+    "documentStatus": "Estado dos Documentos",
+    "vehicleStatus": "Estado dos Veículos",
+    "driverStatus": "Estado dos Motoristas",
+    "documentsByDepartment": "Documentos por Departamento",
+    "showCharts": "Ver Gráficos",
+    "hideCharts": "Ocultar Gráficos"
   },
   "vehicles": {
     "title": "Frota de Veículos",
@@ -85,6 +91,9 @@
     "statusMaintenance": "Manutenção",
     "statusInactive": "Inactivo",
     "statusOnLeave": "Em Licença",
+    "active": "Ativos",
+    "maintenance": "Manutenção",
+    "inactive": "Inativos",
     "viewDetails": "Ver Detalhes",
     "vehicleInfo": "Informações do Veículo",
     "vehicleDeleted": "Veículo eliminado",
@@ -121,6 +130,8 @@
     "contacts": "Contactos",
     "years": "anos",
     "noVehicleAssigned": "Sem veículo atribuído",
+    "active": "Ativos",
+    "inactive": "Inativos",
     "manage": "Gerir",
     "noPhoto": "Sem foto",
     "addPhoto": "Adicionar Foto",

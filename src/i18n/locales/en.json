@@ -65,7 +65,13 @@
     "totalVehicles": "Total Vehicles",
     "validDocuments": "Valid Documents",
     "nearExpiry": "Near Expiry",
-    "expired": "Expired"
+    "expired": "Expired",
+    "documentStatus": "Document Status",
+    "vehicleStatus": "Vehicle Status",
+    "driverStatus": "Driver Status",
+    "documentsByDepartment": "Documents by Department",
+    "showCharts": "Show Charts",
+    "hideCharts": "Hide Charts"
   },
   "vehicles": {
     "title": "Vehicle Fleet",
@@ -85,6 +91,9 @@
     "statusMaintenance": "Maintenance",
     "statusInactive": "Inactive",
     "statusOnLeave": "On Leave",
+    "active": "Active",
+    "maintenance": "Maintenance",
+    "inactive": "Inactive",
     "viewDetails": "View Details",
     "vehicleInfo": "Vehicle Information",
     "vehicleDeleted": "Vehicle deleted",
@@ -121,6 +130,8 @@
     "contacts": "Contacts",
     "years": "years",
     "noVehicleAssigned": "No vehicle assigned",
+    "active": "Active",
+    "inactive": "Inactive",
     "manage": "Manage",
     "noPhoto": "No photo",
     "addPhoto": "Add Photo",
