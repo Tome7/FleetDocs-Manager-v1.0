@@ -15,9 +15,10 @@ import { ReportsDialog } from "@/components/ReportsDialog";
 import { PostTripInspectionList } from "@/components/PostTripInspectionList";
 import { DocumentDeliveryTab } from "@/components/DocumentDeliveryTab";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Bell, Menu, User, LogOut, Loader2, FileText, Car, Users, ClipboardCheck, FileStack, BarChart3, ChevronDown, ChevronUp } from "lucide-react";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Plus, User, LogOut, Loader2, Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
@@ -158,312 +159,284 @@ const Index = () => {
     );
   }
 
+  const getTabTitle = () => {
+    switch (activeTab) {
+      case "vehicles":
+        return t('vehicles.title');
+      case "drivers":
+        return t('drivers.title');
+      case "document-delivery":
+        return t('navigation.documentDelivery');
+      case "inspections":
+        return t('navigation.inspections');
+      default:
+        return t('header.title');
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-card border-b border-border shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="lg:hidden">
-                <Menu className="h-5 w-5" />
-              </Button>
-              <div>
-                <h1 className="text-xl font-bold text-foreground">{t('header.title')}</h1>
-                <p className="text-xs text-muted-foreground hidden sm:block">
-                  {t('header.subtitle')}
-                </p>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-background">
+        {/* Sidebar */}
+        <AppSidebar 
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          alertCount={alerts?.length || 0}
+          onShowReports={() => setShowReports(true)}
+          onShowCharts={() => setShowCharts(!showCharts)}
+          showCharts={showCharts}
+        />
+
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
+          {/* Header */}
+          <header className="sticky top-0 z-50 bg-card border-b border-border shadow-sm">
+            <div className="px-4 lg:px-6 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <SidebarTrigger className="lg:hidden">
+                    <Menu className="h-5 w-5" />
+                  </SidebarTrigger>
+                  <div>
+                    <h1 className="text-xl font-bold text-foreground">{getTabTitle()}</h1>
+                    <p className="text-xs text-muted-foreground hidden sm:block">
+                      {t('header.subtitle')}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <LanguageSelector />
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="rounded-full">
+                        <User className="h-5 w-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{user?.name}</span>
+                          <span className="text-xs text-muted-foreground">{user?.email}</span>
+                          <span className="text-xs text-muted-foreground capitalize">{user?.role}</span>
+                        </div>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={logout}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        {t('auth.logout')}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
             </div>
+          </header>
 
-            <div className="flex items-center gap-1">
-              <LanguageSelector />
-              <Button variant="ghost" size="icon" onClick={() => setShowReports(true)}>
-                <FileText className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
-                {alerts && alerts.length > 0 && (
-                  <span className="absolute top-1 right-1 h-2 w-2 bg-expired rounded-full" />
-                )}
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full">
-                    <User className="h-5 w-5" />
+          {/* Main Content */}
+          <main className="flex-1 overflow-auto p-4 lg:p-6">
+            {/* Stats Section */}
+            <DashboardStats vehicles={vehicles || []} />
+
+            {/* Charts Section - Collapsible */}
+            {showCharts && (
+              <DashboardCharts vehicles={vehicles || []} />
+            )}
+
+            {/* Alerts Section */}
+            {alerts && alerts.length > 0 && (
+              <div className="mb-6">
+                <AlertsPanel />
+              </div>
+            )}
+
+            {/* Tab Content */}
+            {activeTab === "vehicles" && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold mb-1">{t('vehicles.title')}</h2>
+                    <p className="text-sm text-muted-foreground">
+                      {t('vehicles.subtitle')}
+                    </p>
+                  </div>
+                  <Button className="hidden sm:flex" onClick={() => setShowVehicleForm(true)}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    {t('vehicles.addVehicle')}
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{user?.name}</span>
-                      <span className="text-xs text-muted-foreground">{user?.email}</span>
-                      <span className="text-xs text-muted-foreground capitalize">{user?.role}</span>
+                </div>
+
+                <SearchBar
+                  value={searchTerm} 
+                  onChange={setSearchTerm} 
+                  placeholder={t('vehicles.searchPlaceholder')}
+                  statusFilter={vehicleStatusFilter}
+                  onStatusChange={setVehicleStatusFilter}
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {filteredVehicles && filteredVehicles.length > 0 ? (
+                    filteredVehicles.map((vehicle: any) => (
+                      <VehicleCard 
+                        key={vehicle.id} 
+                        vehicle={vehicle}
+                        onEdit={() => {
+                          setEditingVehicle(vehicle);
+                          setShowVehicleForm(true);
+                        }}
+                        onDelete={() => setDeletingVehicleId(vehicle.id.toString())}
+                      />
+                    ))
+                  ) : (
+                    <div className="col-span-full text-center py-12">
+                      <p className="text-muted-foreground">{t('vehicles.noVehicles')}</p>
                     </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    {t('auth.logout')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-6">
-        {/* Stats Section */}
-        <DashboardStats vehicles={vehicles || []} />
-
-        {/* Charts Toggle Button */}
-        <div className="mb-4">
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => setShowCharts(!showCharts)}
-            className="flex items-center gap-2"
-          >
-            <BarChart3 className="h-4 w-4" />
-            {showCharts ? t('dashboard.hideCharts') : t('dashboard.showCharts')}
-            {showCharts ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </Button>
-        </div>
-
-        {/* Charts Section - Collapsible */}
-        {showCharts && (
-          <DashboardCharts vehicles={vehicles || []} />
-        )}
-
-        {/* Alerts Section */}
-        {alerts && alerts.length > 0 && (
-          <div className="mb-6">
-            <AlertsPanel />
-          </div>
-        )}
-
-        {/* Tabs Navigation - Vertical Layout */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="bg-card border border-border rounded-xl p-2 mb-6 shadow-sm">
-            <TabsList className="flex flex-col w-full h-auto gap-1 bg-transparent">
-              <TabsTrigger 
-                value="vehicles" 
-                className="flex items-center justify-start gap-3 w-full py-3 px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200 hover:bg-muted"
-              >
-                <Car className="h-5 w-5" />
-                <span className="font-medium">{t('navigation.vehicles')}</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="drivers" 
-                className="flex items-center justify-start gap-3 w-full py-3 px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200 hover:bg-muted"
-              >
-                <Users className="h-5 w-5" />
-                <span className="font-medium">{t('navigation.drivers')}</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="document-delivery" 
-                className="flex items-center justify-start gap-3 w-full py-3 px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200 hover:bg-muted"
-              >
-                <FileStack className="h-5 w-5" />
-                <span className="font-medium">{t('navigation.documentDelivery')}</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="inspections" 
-                className="flex items-center justify-start gap-3 w-full py-3 px-4 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200 hover:bg-muted"
-              >
-                <ClipboardCheck className="h-5 w-5" />
-                <span className="font-medium">{t('navigation.inspections')}</span>
-              </TabsTrigger>
-            </TabsList>
-          </div>
-
-          {/* Vehicles Tab */}
-          <TabsContent value="vehicles" className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold mb-1">{t('vehicles.title')}</h2>
-                <p className="text-sm text-muted-foreground">
-                  {t('vehicles.subtitle')}
-                </p>
-              </div>
-              <Button className="hidden sm:flex" onClick={() => setShowVehicleForm(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                {t('vehicles.addVehicle')}
-              </Button>
-            </div>
-
-            <SearchBar
-              value={searchTerm} 
-              onChange={setSearchTerm} 
-              placeholder={t('vehicles.searchPlaceholder')}
-              statusFilter={vehicleStatusFilter}
-              onStatusChange={setVehicleStatusFilter}
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredVehicles && filteredVehicles.length > 0 ? (
-                filteredVehicles.map((vehicle: any) => (
-                  <VehicleCard 
-                    key={vehicle.id} 
-                    vehicle={vehicle}
-                    onEdit={() => {
-                      setEditingVehicle(vehicle);
-                      setShowVehicleForm(true);
-                    }}
-                    onDelete={() => setDeletingVehicleId(vehicle.id.toString())}
-                  />
-                ))
-              ) : (
-                <div className="col-span-full text-center py-12">
-                  <p className="text-muted-foreground">{t('vehicles.noVehicles')}</p>
+                  )}
                 </div>
-              )}
-            </div>
 
-            <Button
-              size="icon"
-              className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg sm:hidden"
-              onClick={() => setShowVehicleForm(true)}
-            >
-              <Plus className="h-6 w-6" />
-            </Button>
-          </TabsContent>
-
-          {/* Drivers Tab */}
-          <TabsContent value="drivers" className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold mb-1">{t('drivers.title')}</h2>
-                <p className="text-sm text-muted-foreground">
-                  {t('drivers.subtitle')} • <strong>{drivers?.length || 0}</strong> {t('drivers.registered')}
-                </p>
+                <Button
+                  size="icon"
+                  className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg sm:hidden"
+                  onClick={() => setShowVehicleForm(true)}
+                >
+                  <Plus className="h-6 w-6" />
+                </Button>
               </div>
-              <Button className="hidden sm:flex" onClick={() => setShowDriverForm(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                {t('drivers.addDriver')}
-              </Button>
-            </div>
+            )}
 
-            <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder={t('drivers.searchPlaceholder')} />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredDrivers && filteredDrivers.length > 0 ? (
-                filteredDrivers.map((driver: any) => (
-                  <DriverCard 
-                    key={driver.id} 
-                    driver={driver}
-                    onEdit={() => {
-                      setEditingDriver(driver);
-                      setShowDriverForm(true);
-                    }}
-                    onDelete={() => setDeletingDriverId(driver.id.toString())}
-                    onViewDocuments={() => setViewingDriverProfile(driver.id.toString())}
-                    onAssignVehicle={() => setAssigningVehicleDriver(driver)}
-                  />
-                ))
-              ) : (
-                <div className="col-span-full text-center py-12">
-                  <p className="text-muted-foreground">{t('drivers.noDrivers')}</p>
+            {activeTab === "drivers" && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold mb-1">{t('drivers.title')}</h2>
+                    <p className="text-sm text-muted-foreground">
+                      {t('drivers.subtitle')} • <strong>{drivers?.length || 0}</strong> {t('drivers.registered')}
+                    </p>
+                  </div>
+                  <Button className="hidden sm:flex" onClick={() => setShowDriverForm(true)}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    {t('drivers.addDriver')}
+                  </Button>
                 </div>
-              )}
-            </div>
 
-            <Button
-              size="icon"
-              className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg sm:hidden"
-              onClick={() => setShowDriverForm(true)}
-            >
-              <Plus className="h-6 w-6" />
-            </Button>
-          </TabsContent>
+                <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder={t('drivers.searchPlaceholder')} />
 
-          {/* Document Delivery Tab */}
-          <TabsContent value="document-delivery" className="space-y-6">
-            <DocumentDeliveryTab />
-          </TabsContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {filteredDrivers && filteredDrivers.length > 0 ? (
+                    filteredDrivers.map((driver: any) => (
+                      <DriverCard 
+                        key={driver.id} 
+                        driver={driver}
+                        onEdit={() => {
+                          setEditingDriver(driver);
+                          setShowDriverForm(true);
+                        }}
+                        onDelete={() => setDeletingDriverId(driver.id.toString())}
+                        onViewDocuments={() => setViewingDriverProfile(driver.id.toString())}
+                        onAssignVehicle={() => setAssigningVehicleDriver(driver)}
+                      />
+                    ))
+                  ) : (
+                    <div className="col-span-full text-center py-12">
+                      <p className="text-muted-foreground">{t('drivers.noDrivers')}</p>
+                    </div>
+                  )}
+                </div>
 
-          {/* Post-Trip Inspections Tab */}
-          <TabsContent value="inspections" className="space-y-6">
-            <PostTripInspectionList />
-          </TabsContent>
-        </Tabs>
-      </main>
+                <Button
+                  size="icon"
+                  className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg sm:hidden"
+                  onClick={() => setShowDriverForm(true)}
+                >
+                  <Plus className="h-6 w-6" />
+                </Button>
+              </div>
+            )}
 
-      <VehicleForm 
-        open={showVehicleForm} 
-        onClose={() => {
-          setShowVehicleForm(false);
-          setEditingVehicle(null);
-        }}
-        vehicle={editingVehicle}
-      />
+            {activeTab === "document-delivery" && (
+              <DocumentDeliveryTab />
+            )}
 
-      <DriverForm 
-        open={showDriverForm} 
-        onClose={() => {
-          setShowDriverForm(false);
-          setEditingDriver(null);
-        }}
-        driver={editingDriver}
-      />
+            {activeTab === "inspections" && (
+              <PostTripInspectionList />
+            )}
+          </main>
+        </div>
 
-      <DriverProfileDialog
-        open={!!viewingDriverProfile}
-        onClose={() => setViewingDriverProfile(null)}
-        driverId={viewingDriverProfile || undefined}
-      />
+        <VehicleForm 
+          open={showVehicleForm} 
+          onClose={() => {
+            setShowVehicleForm(false);
+            setEditingVehicle(null);
+          }}
+          vehicle={editingVehicle}
+        />
 
-      <VehicleAssignmentDialog
-        open={!!assigningVehicleDriver}
-        onClose={() => setAssigningVehicleDriver(null)}
-        driver={assigningVehicleDriver}
-      />
+        <DriverForm 
+          open={showDriverForm} 
+          onClose={() => {
+            setShowDriverForm(false);
+            setEditingDriver(null);
+          }}
+          driver={editingDriver}
+        />
+
+        <DriverProfileDialog
+          open={!!viewingDriverProfile}
+          onClose={() => setViewingDriverProfile(null)}
+          driverId={viewingDriverProfile || undefined}
+        />
+
+        <VehicleAssignmentDialog
+          open={!!assigningVehicleDriver}
+          onClose={() => setAssigningVehicleDriver(null)}
+          driver={assigningVehicleDriver}
+        />
 
 
-      <ReportsDialog open={showReports} onClose={() => setShowReports(false)} />
+        <ReportsDialog open={showReports} onClose={() => setShowReports(false)} />
 
-      <AlertDialog open={!!deletingVehicleId} onOpenChange={() => setDeletingVehicleId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('vehicles.deleteVehicle')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('vehicles.deleteConfirm')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={() => deletingVehicleId && deleteVehicleMutation.mutate(deletingVehicleId)}
-              className="bg-destructive hover:bg-destructive/90"
-            >
-              {t('common.delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        <AlertDialog open={!!deletingVehicleId} onOpenChange={() => setDeletingVehicleId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('vehicles.deleteVehicle')}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('vehicles.deleteConfirm')}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={() => deletingVehicleId && deleteVehicleMutation.mutate(deletingVehicleId)}
+                className="bg-destructive hover:bg-destructive/90"
+              >
+                {t('common.delete')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
-      <AlertDialog open={!!deletingDriverId} onOpenChange={() => setDeletingDriverId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('drivers.deleteDriver')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('drivers.deleteConfirm')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={() => deletingDriverId && deleteDriverMutation.mutate(deletingDriverId)}
-              className="bg-destructive hover:bg-destructive/90"
-            >
-              {t('common.delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+        <AlertDialog open={!!deletingDriverId} onOpenChange={() => setDeletingDriverId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('drivers.deleteDriver')}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('drivers.deleteConfirm')}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={() => deletingDriverId && deleteDriverMutation.mutate(deletingDriverId)}
+                className="bg-destructive hover:bg-destructive/90"
+              >
+                {t('common.delete')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </SidebarProvider>
   );
 };
 
