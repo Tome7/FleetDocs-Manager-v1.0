@@ -56,10 +56,13 @@
     "reports": "报表"
   },
   "navigation": {
+    "title": "导航",
+    "dashboard": "总览",
     "vehicles": "车辆",
     "drivers": "司机",
     "documentDelivery": "文件交付",
-    "inspections": "行程后检查"
+    "inspections": "行程后检查",
+    "tools": "工具"
   },
   "dashboard": {
     "totalVehicles": "车辆总数",

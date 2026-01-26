@@ -1,8 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { vehiclesApi, alertsApi, driversApi } from "@/lib/api";
-import { DashboardStats } from "@/components/DashboardStats";
-import { DashboardCharts } from "@/components/DashboardCharts";
+import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 import { SearchBar } from "@/components/SearchBar";
 import { VehicleCard } from "@/components/VehicleCard";
 import { VehicleForm } from "@/components/VehicleForm";
@@ -10,12 +9,12 @@ import { DriverForm } from "@/components/DriverForm";
 import { DriverCard } from "@/components/DriverCard";
 import { DriverProfileDialog } from "@/components/DriverProfileDialog";
 import { VehicleAssignmentDialog } from "@/components/VehicleAssignmentDialog";
-import { AlertsPanel } from "@/components/AlertsPanel";
+import { AlertsPanelRefactored } from "@/components/alerts/AlertsPanelRefactored";
 import { ReportsDialog } from "@/components/ReportsDialog";
 import { PostTripInspectionList } from "@/components/PostTripInspectionList";
 import { DocumentDeliveryTab } from "@/components/DocumentDeliveryTab";
 import { LanguageSelector } from "@/components/LanguageSelector";
-import { AppSidebar } from "@/components/AppSidebar";
+import { AppSidebarRefactored } from "@/components/sidebar/AppSidebarRefactored";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Plus, User, LogOut, Loader2, Menu } from "lucide-react";
@@ -46,15 +45,20 @@ const Index = () => {
   const { toast } = useToast();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState("vehicles");
+  
+  // Navigation state
+  const [activeTab, setActiveTab] = useState("dashboard");
+  
+  // Modal states
   const [showVehicleForm, setShowVehicleForm] = useState(false);
   const [showDriverForm, setShowDriverForm] = useState(false);
   const [showReports, setShowReports] = useState(false);
-  const [showCharts, setShowCharts] = useState(false);
-  const [showAlerts, setShowAlerts] = useState(false);
   
+  // Filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [vehicleStatusFilter, setVehicleStatusFilter] = useState("all");
+  
+  // Edit/Delete states
   const [editingVehicle, setEditingVehicle] = useState<any>(null);
   const [editingDriver, setEditingDriver] = useState<any>(null);
   const [assigningVehicleDriver, setAssigningVehicleDriver] = useState<any>(null);
@@ -62,6 +66,7 @@ const Index = () => {
   const [deletingVehicleId, setDeletingVehicleId] = useState<string | null>(null);
   const [deletingDriverId, setDeletingDriverId] = useState<string | null>(null);
   
+  // Data queries
   const { data: vehicles, isLoading, error } = useQuery({
     queryKey: ['vehicles'],
     queryFn: vehiclesApi.getAll,
@@ -82,6 +87,7 @@ const Index = () => {
     alertsApi.generate();
   }, []);
 
+  // Mutations
   const deleteVehicleMutation = useMutation({
     mutationFn: vehiclesApi.delete,
     onSuccess: () => {
@@ -122,6 +128,7 @@ const Index = () => {
     },
   });
 
+  // Filtered data
   const filteredVehicles = vehicles?.filter((v: any) => {
     const matchesSearch = 
       v.license_plate.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -141,6 +148,7 @@ const Index = () => {
     (d.department && d.department.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  // Loading state
   if (isLoading || driversLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -149,6 +157,7 @@ const Index = () => {
     );
   }
 
+  // Error state
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -160,8 +169,11 @@ const Index = () => {
     );
   }
 
+  // Get tab title
   const getTabTitle = () => {
     switch (activeTab) {
+      case "dashboard":
+        return t('navigation.dashboard') || 'Visão Geral';
       case "vehicles":
         return t('vehicles.title');
       case "drivers":
@@ -170,27 +182,28 @@ const Index = () => {
         return t('navigation.documentDelivery');
       case "inspections":
         return t('navigation.inspections');
+      case "alerts":
+        return t('alerts.documentAlerts');
       default:
         return t('header.title');
     }
+  };
+
+  // Handle tab change
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setSearchTerm(""); // Reset search when changing tabs
   };
 
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         {/* Sidebar */}
-        <AppSidebar 
+        <AppSidebarRefactored 
           activeTab={activeTab}
-          onTabChange={(tab) => {
-            setActiveTab(tab);
-            setShowAlerts(false);
-          }}
+          onTabChange={handleTabChange}
           alertCount={alerts?.length || 0}
           onShowReports={() => setShowReports(true)}
-          onShowCharts={() => setShowCharts(!showCharts)}
-          showCharts={showCharts}
-          onShowAlerts={() => setShowAlerts(!showAlerts)}
-          showAlerts={showAlerts}
         />
 
         {/* Main Content Area */}
@@ -241,22 +254,20 @@ const Index = () => {
 
           {/* Main Content */}
           <main className="flex-1 overflow-auto p-4 lg:p-6">
-            {/* Stats Section */}
-            <DashboardStats vehicles={vehicles || []} />
-
-            {/* Charts Section - Collapsible */}
-            {showCharts && (
-              <DashboardCharts vehicles={vehicles || []} />
+            
+            {/* Dashboard Tab */}
+            {activeTab === "dashboard" && (
+              <DashboardOverview />
             )}
 
-            {/* Alerts Section - Only shown when alerts button is clicked */}
-            {showAlerts && (
-              <div className="mb-6">
-                <AlertsPanel />
+            {/* Alerts Tab */}
+            {activeTab === "alerts" && (
+              <div className="max-w-4xl">
+                <AlertsPanelRefactored />
               </div>
             )}
 
-            {/* Tab Content */}
+            {/* Vehicles Tab */}
             {activeTab === "vehicles" && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
@@ -310,6 +321,7 @@ const Index = () => {
               </div>
             )}
 
+            {/* Drivers Tab */}
             {activeTab === "drivers" && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
@@ -359,16 +371,19 @@ const Index = () => {
               </div>
             )}
 
+            {/* Document Delivery Tab */}
             {activeTab === "document-delivery" && (
               <DocumentDeliveryTab />
             )}
 
+            {/* Inspections Tab */}
             {activeTab === "inspections" && (
               <PostTripInspectionList />
             )}
           </main>
         </div>
 
+        {/* Modals */}
         <VehicleForm 
           open={showVehicleForm} 
           onClose={() => {
@@ -399,9 +414,9 @@ const Index = () => {
           driver={assigningVehicleDriver}
         />
 
-
         <ReportsDialog open={showReports} onClose={() => setShowReports(false)} />
 
+        {/* Delete Vehicle Confirmation */}
         <AlertDialog open={!!deletingVehicleId} onOpenChange={() => setDeletingVehicleId(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -422,6 +437,7 @@ const Index = () => {
           </AlertDialogContent>
         </AlertDialog>
 
+        {/* Delete Driver Confirmation */}
         <AlertDialog open={!!deletingDriverId} onOpenChange={() => setDeletingDriverId(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>

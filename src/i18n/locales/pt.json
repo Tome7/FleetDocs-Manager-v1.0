@@ -56,10 +56,13 @@
     "reports": "Relatórios"
   },
   "navigation": {
+    "title": "Navegação",
+    "dashboard": "Visão Geral",
     "vehicles": "Veículos",
     "drivers": "Motoristas",
     "documentDelivery": "Entregas de Documentos",
-    "inspections": "Inspeções Pós-Viagem"
+    "inspections": "Inspeções Pós-Viagem",
+    "tools": "Ferramentas"
   },
   "dashboard": {
     "totalVehicles": "Total de Veículos",

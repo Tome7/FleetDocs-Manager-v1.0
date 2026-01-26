@@ -56,10 +56,13 @@
     "reports": "Reports"
   },
   "navigation": {
+    "title": "Navigation",
+    "dashboard": "Overview",
     "vehicles": "Vehicles",
     "drivers": "Drivers",
     "documentDelivery": "Document Deliveries",
-    "inspections": "Post-Trip Inspections"
+    "inspections": "Post-Trip Inspections",
+    "tools": "Tools"
   },
   "dashboard": {
     "totalVehicles": "Total Vehicles",
