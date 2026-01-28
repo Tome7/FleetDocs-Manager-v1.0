@@ -149,14 +149,14 @@ export const DashboardOverview = () => {
       {/* Header Section */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">{t('navigation.dashboard') || 'Visão Geral'}</h2>
+          <h2 className="text-2xl font-bold tracking-tight">{t('navigation.dashboard')}</h2>
           <p className="text-sm text-muted-foreground">
-            {t('dashboard.systemOverview') || 'Resumo do sistema em tempo real'}
+            {t('dashboard.systemOverview')}
           </p>
         </div>
         <Badge variant="outline" className="flex items-center gap-1.5 px-3 py-1">
           <Activity className="h-3 w-3 text-success animate-pulse" />
-          <span className="text-xs">Sincronizado</span>
+          <span className="text-xs">{t('dashboard.synchronized')}</span>
         </Badge>
       </div>
 
@@ -167,35 +167,35 @@ export const DashboardOverview = () => {
           value={vehicles?.length || 0}
           icon={<Truck className="h-6 w-6" />}
           variant="info"
-          subtitle={`${activeVehicles} ativos • ${maintenanceVehicles} manutenção`}
+          subtitle={`${activeVehicles} ${t('vehicles.active').toLowerCase()} • ${maintenanceVehicles} ${t('vehicles.maintenance').toLowerCase()}`}
         />
         <StatCard
-          title={t('dashboard.totalDrivers') || 'Total Motoristas'}
+          title={t('dashboard.totalDrivers')}
           value={drivers?.length || 0}
           icon={<Users className="h-6 w-6" />}
           variant="default"
-          subtitle={`${activeDrivers} ativos`}
+          subtitle={`${activeDrivers} ${t('drivers.active').toLowerCase()}`}
         />
         <StatCard
           title={t('dashboard.validDocuments')}
           value={validCount}
           icon={<FileCheck className="h-6 w-6" />}
           variant="success"
-          subtitle={`de ${allDocs.length} documentos`}
+          subtitle={`${t('common.documents').toLowerCase()}`}
         />
         <StatCard
           title={t('dashboard.nearExpiry')}
           value={warningCount}
           icon={<AlertTriangle className="h-6 w-6" />}
           variant="warning"
-          subtitle="próximos 30 dias"
+          subtitle={t('alerts.days30')}
         />
         <StatCard
           title={t('dashboard.expired')}
           value={expiredCount}
           icon={<FileX className="h-6 w-6" />}
           variant="expired"
-          subtitle="requerem ação"
+          subtitle={t('common.actions').toLowerCase()}
         />
       </div>
 

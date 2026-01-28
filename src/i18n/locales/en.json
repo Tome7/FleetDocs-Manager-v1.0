@@ -66,6 +66,7 @@
   },
   "dashboard": {
     "totalVehicles": "Total Vehicles",
+    "totalDrivers": "Total Drivers",
     "validDocuments": "Valid Documents",
     "nearExpiry": "Near Expiry",
     "expired": "Expired",
@@ -74,7 +75,9 @@
     "driverStatus": "Driver Status",
     "documentsByDepartment": "Documents by Department",
     "showCharts": "Show Charts",
-    "hideCharts": "Hide Charts"
+    "hideCharts": "Hide Charts",
+    "systemOverview": "Real-time system overview",
+    "synchronized": "Synchronized"
   },
   "vehicles": {
     "title": "Vehicle Fleet",
