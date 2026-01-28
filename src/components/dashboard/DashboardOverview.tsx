@@ -50,11 +50,19 @@ interface StatCardProps {
 
 const StatCard = ({ title, value, icon, variant, subtitle }: StatCardProps) => {
   const variantStyles = {
-    default: "bg-card border-border",
-    success: "bg-success/10 border-success/30",
-    warning: "bg-warning/10 border-warning/30",
-    expired: "bg-expired/10 border-expired/30",
-    info: "bg-primary/10 border-primary/30",
+    default: "bg-white border-border hover:border-primary/30",
+    success: "bg-white border-success/20 hover:border-success/40",
+    warning: "bg-white border-warning/20 hover:border-warning/40",
+    expired: "bg-white border-expired/20 hover:border-expired/40",
+    info: "bg-white border-primary/20 hover:border-primary/40",
+  };
+
+  const iconContainerStyles = {
+    default: "bg-primary/10",
+    success: "bg-success/10",
+    warning: "bg-warning/10",
+    expired: "bg-expired/10",
+    info: "bg-primary/10",
   };
 
   const iconStyles = {
@@ -66,17 +74,17 @@ const StatCard = ({ title, value, icon, variant, subtitle }: StatCardProps) => {
   };
 
   return (
-    <Card className={`p-5 border-2 shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1 ${variantStyles[variant]}`}>
+    <Card className={`p-5 border shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 ${variantStyles[variant]}`}>
       <div className="flex items-start justify-between">
         <div className="space-y-1">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <p className="text-3xl font-bold tracking-tight">{value}</p>
+          <p className="text-3xl font-bold tracking-tight text-foreground">{value}</p>
           {subtitle && (
             <p className="text-xs text-muted-foreground">{subtitle}</p>
           )}
         </div>
-        <div className={`p-3 rounded-xl bg-background/50 ${iconStyles[variant]}`}>
-          {icon}
+        <div className={`p-3 rounded-xl ${iconContainerStyles[variant]}`}>
+          <div className={iconStyles[variant]}>{icon}</div>
         </div>
       </div>
     </Card>
@@ -147,16 +155,16 @@ export const DashboardOverview = () => {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between bg-white p-4 rounded-xl border border-border/50 shadow-sm">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">{t('navigation.dashboard')}</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">{t('navigation.dashboard')}</h2>
           <p className="text-sm text-muted-foreground">
             {t('dashboard.systemOverview')}
           </p>
         </div>
-        <Badge variant="outline" className="flex items-center gap-1.5 px-3 py-1">
-          <Activity className="h-3 w-3 text-success animate-pulse" />
-          <span className="text-xs">{t('dashboard.synchronized')}</span>
+        <Badge className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary border-0 hover:bg-primary/15">
+          <Activity className="h-3 w-3 animate-pulse" />
+          <span className="text-xs font-medium">{t('dashboard.synchronized')}</span>
         </Badge>
       </div>
 

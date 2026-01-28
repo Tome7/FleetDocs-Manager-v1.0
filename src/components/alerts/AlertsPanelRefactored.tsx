@@ -13,8 +13,7 @@ import {
   FileWarning, 
   RefreshCw,
   ShieldAlert,
-  Clock,
-  Sparkles
+  Clock
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -91,15 +90,15 @@ const AlertItem = ({ alert, config, onMarkRead, isLoading, index }: AlertItemPro
         </div>
       )}
 
-      {/* Source type icon with gradient background */}
+      {/* Source type icon */}
       <div className={cn(
-        "relative z-10 mt-0.5 p-2.5 rounded-xl transition-all duration-300 group-hover:scale-110",
+        "relative z-10 mt-0.5 p-2.5 rounded-xl transition-all duration-300 group-hover:scale-105",
         isVehicle 
-          ? "bg-primary-gradient shadow-glow" 
-          : "bg-gradient-to-br from-secondary to-muted shadow-md"
+          ? "bg-primary/10" 
+          : "bg-secondary"
       )}>
         {isVehicle ? (
-          <Car className="h-4 w-4 text-white" />
+          <Car className="h-4 w-4 text-primary" />
         ) : (
           <User className="h-4 w-4 text-foreground" />
         )}
@@ -209,19 +208,19 @@ const SectionHeader = ({ type, count }: SectionHeaderProps) => {
 
 // Loading skeleton
 const LoadingSkeleton = () => (
-  <Card className="p-6 glass glass-border">
+  <Card className="p-6 bg-white border border-border/50 shadow-sm">
     <div className="flex items-center gap-3 mb-6">
-      <div className="h-12 w-12 rounded-2xl bg-muted animate-shimmer" />
+      <div className="h-12 w-12 rounded-2xl bg-muted animate-pulse" />
       <div className="space-y-2">
-        <div className="h-5 w-40 bg-muted animate-shimmer rounded-lg" />
-        <div className="h-3 w-24 bg-muted animate-shimmer rounded-lg" />
+        <div className="h-5 w-40 bg-muted animate-pulse rounded-lg" />
+        <div className="h-3 w-24 bg-muted animate-pulse rounded-lg" />
       </div>
     </div>
     <div className="space-y-3">
       {[...Array(3)].map((_, i) => (
         <div 
           key={i} 
-          className="h-24 bg-muted animate-shimmer rounded-2xl"
+          className="h-24 bg-muted animate-pulse rounded-xl"
           style={{ animationDelay: `${i * 0.1}s` }}
         />
       ))}
@@ -234,47 +233,39 @@ const EmptyState = ({ onRefresh, isRefetching }: { onRefresh: () => void; isRefe
   const { t } = useTranslation();
   
   return (
-    <Card className="p-8 glass glass-border relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 bg-gradient-to-br from-success/5 to-transparent" />
-      <div className="absolute top-4 right-4">
-        <Sparkles className="h-6 w-6 text-success/30 animate-float" />
+    <Card className="p-8 bg-white border border-border/50 shadow-sm">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-success/10">
+            <Bell className="h-5 w-5 text-success" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-foreground">{t('alerts.documentAlerts')}</h2>
+            <p className="text-xs text-muted-foreground">Monitoramento de documentos</p>
+          </div>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onRefresh}
+          disabled={isRefetching}
+          className="rounded-lg hover:bg-muted"
+        >
+          <RefreshCw className={cn("h-4 w-4", isRefetching && "animate-spin")} />
+        </Button>
       </div>
       
-      <div className="relative z-10">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-2xl bg-success-gradient shadow-md">
-              <Bell className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-foreground">{t('alerts.documentAlerts')}</h2>
-              <p className="text-xs text-muted-foreground">Monitoramento de documentos</p>
-            </div>
+      <div className="text-center py-10">
+        <div className="relative inline-block mb-4">
+          <div className="h-20 w-20 rounded-2xl bg-success/10 flex items-center justify-center mx-auto">
+            <FileWarning className="h-10 w-10 text-success/50" />
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onRefresh}
-            disabled={isRefetching}
-            className="rounded-xl hover:bg-muted"
-          >
-            <RefreshCw className={cn("h-4 w-4", isRefetching && "animate-spin")} />
-          </Button>
-        </div>
-        
-        <div className="text-center py-10">
-          <div className="relative inline-block mb-4">
-            <div className="h-20 w-20 rounded-3xl bg-success/10 flex items-center justify-center mx-auto">
-              <FileWarning className="h-10 w-10 text-success/50" />
-            </div>
-            <div className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-success flex items-center justify-center shadow-lg">
-              <Check className="h-4 w-4 text-white" />
-            </div>
+          <div className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-success flex items-center justify-center shadow-md">
+            <Check className="h-4 w-4 text-white" />
           </div>
-          <p className="text-sm text-muted-foreground font-medium">{t('alerts.noAlerts')}</p>
-          <p className="text-xs text-muted-foreground/60 mt-1">Todos os documentos estão em dia</p>
         </div>
+        <p className="text-sm text-muted-foreground font-medium">{t('alerts.noAlerts')}</p>
+        <p className="text-xs text-muted-foreground/60 mt-1">Todos os documentos estão em dia</p>
       </div>
     </Card>
   );
@@ -390,24 +381,23 @@ export const AlertsPanelRefactored = () => {
   }
 
   return (
-    <Card className="p-6 glass glass-border relative overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-expired/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-warning/5 to-transparent rounded-full translate-y-1/2 -translate-x-1/2" />
-      
+    <Card className="p-6 bg-white border border-border/50 shadow-sm">
       <div className="relative z-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className={cn(
-              "p-3 rounded-2xl shadow-md relative",
-              urgentAlerts.length > 0 ? "bg-expired-gradient" : "bg-warning-gradient"
+              "p-3 rounded-xl relative",
+              urgentAlerts.length > 0 ? "bg-expired/10" : "bg-warning/10"
             )}>
-              <Bell className="h-5 w-5 text-white" />
+              <Bell className={cn(
+                "h-5 w-5",
+                urgentAlerts.length > 0 ? "text-expired" : "text-warning"
+              )} />
               {urgentAlerts.length > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-white" />
+                <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-expired opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-expired" />
                 </span>
               )}
             </div>
@@ -419,9 +409,8 @@ export const AlertsPanelRefactored = () => {
           
           <div className="flex items-center gap-2">
             <Badge 
-              variant="secondary" 
               className={cn(
-                "text-sm font-bold px-3 py-1 rounded-full",
+                "text-sm font-bold px-3 py-1 rounded-full border-0",
                 urgentAlerts.length > 0 
                   ? "bg-expired/10 text-expired" 
                   : "bg-warning/10 text-warning"
@@ -434,7 +423,7 @@ export const AlertsPanelRefactored = () => {
               size="sm"
               onClick={() => refetch()}
               disabled={isRefetching}
-              className="rounded-xl hover:bg-muted h-9 w-9 p-0"
+              className="rounded-lg hover:bg-muted h-9 w-9 p-0"
             >
               <RefreshCw className={cn("h-4 w-4", isRefetching && "animate-spin")} />
             </Button>

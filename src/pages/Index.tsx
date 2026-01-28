@@ -195,10 +195,14 @@ const Index = () => {
     setSearchTerm(""); // Reset search when changing tabs
   };
 
+  // Sidebar width for layout offset
+  const sidebarWidth = "16rem"; // 256px when expanded
+  const sidebarCollapsedWidth = "72px";
+
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
-        {/* Sidebar */}
+      <div className="min-h-screen w-full bg-background">
+        {/* Sidebar - Fixed position */}
         <AppSidebarRefactored 
           activeTab={activeTab}
           onTabChange={handleTabChange}
@@ -206,33 +210,36 @@ const Index = () => {
           onShowReports={() => setShowReports(true)}
         />
 
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
+        {/* Main Content Area - With left margin to avoid sidebar overlap */}
+        <div 
+          className="min-h-screen flex flex-col transition-all duration-300"
+          style={{ marginLeft: sidebarWidth }}
+        >
           {/* Header */}
-          <header className="sticky top-0 z-50 bg-card border-b border-border shadow-sm">
-            <div className="px-4 lg:px-6 py-4">
+          <header className="sticky top-0 z-30 bg-white border-b border-border/50 shadow-sm">
+            <div className="px-6 py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <SidebarTrigger className="lg:hidden">
+                  <SidebarTrigger className="lg:hidden text-foreground hover:bg-muted rounded-lg p-2">
                     <Menu className="h-5 w-5" />
                   </SidebarTrigger>
                   <div>
                     <h1 className="text-xl font-bold text-foreground">{getTabTitle()}</h1>
-                    <p className="text-xs text-muted-foreground hidden sm:block">
+                    <p className="text-sm text-muted-foreground hidden sm:block">
                       {t('header.subtitle')}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2">
                   <LanguageSelector />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="rounded-full">
-                        <User className="h-5 w-5" />
+                      <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10">
+                        <User className="h-5 w-5 text-primary" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" className="w-56">
                       <DropdownMenuLabel>
                         <div className="flex flex-col">
                           <span className="font-medium">{user?.name}</span>
@@ -241,7 +248,7 @@ const Index = () => {
                         </div>
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={logout}>
+                      <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive">
                         <LogOut className="mr-2 h-4 w-4" />
                         {t('auth.logout')}
                       </DropdownMenuItem>
