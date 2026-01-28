@@ -66,6 +66,7 @@
   },
   "dashboard": {
     "totalVehicles": "Total de Veículos",
+    "totalDrivers": "Total de Motoristas",
     "validDocuments": "Documentos Válidos",
     "nearExpiry": "Perto de Expirar",
     "expired": "Expirados",
@@ -74,7 +75,9 @@
     "driverStatus": "Estado dos Motoristas",
     "documentsByDepartment": "Documentos por Departamento",
     "showCharts": "Ver Gráficos",
-    "hideCharts": "Ocultar Gráficos"
+    "hideCharts": "Ocultar Gráficos",
+    "systemOverview": "Resumo do sistema em tempo real",
+    "synchronized": "Sincronizado"
   },
   "vehicles": {
     "title": "Frota de Veículos",

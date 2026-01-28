@@ -66,9 +66,18 @@
   },
   "dashboard": {
     "totalVehicles": "车辆总数",
+    "totalDrivers": "司机总数",
     "validDocuments": "有效文件",
     "nearExpiry": "即将到期",
-    "expired": "已过期"
+    "expired": "已过期",
+    "documentStatus": "文件状态",
+    "vehicleStatus": "车辆状态",
+    "driverStatus": "司机状态",
+    "documentsByDepartment": "按部门文件",
+    "showCharts": "显示图表",
+    "hideCharts": "隐藏图表",
+    "systemOverview": "实时系统概述",
+    "synchronized": "已同步"
   },
   "vehicles": {
     "title": "车队",
