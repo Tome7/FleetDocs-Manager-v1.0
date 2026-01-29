@@ -196,9 +196,9 @@ const Index = () => {
   };
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen w-full flex bg-background">
-        {/* Sidebar - Fixed position */}
+        {/* Sidebar */}
         <AppSidebarRefactored 
           activeTab={activeTab}
           onTabChange={handleTabChange}
@@ -206,8 +206,8 @@ const Index = () => {
           onShowReports={() => setShowReports(true)}
         />
 
-        {/* Main Content Area - Responsive margins */}
-        <div className="flex-1 min-h-screen flex flex-col transition-all duration-300 ml-[72px] lg:ml-64">
+        {/* Main Content Area - Uses flex-1 to fill remaining space */}
+        <div className="flex-1 min-h-screen flex flex-col transition-all duration-300">
           {/* Header */}
           <header className="sticky top-0 z-30 bg-white border-b border-border/50 shadow-sm">
             <div className="px-6 py-4">

@@ -87,10 +87,9 @@ export function AppSidebarRefactored({
   return (
     <Sidebar 
       className={cn(
-        "fixed left-0 top-0 h-screen z-40 border-r-0 transition-all duration-300 ease-out",
+        "border-r-0 transition-all duration-300 ease-out",
         "bg-gradient-to-b from-primary to-[hsl(220,85%,45%)]",
-        "shadow-sidebar",
-        "w-[72px] lg:w-64"
+        "shadow-sidebar"
       )}
       collapsible="icon"
     >
