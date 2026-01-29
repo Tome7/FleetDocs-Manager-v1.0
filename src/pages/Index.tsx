@@ -195,13 +195,9 @@ const Index = () => {
     setSearchTerm(""); // Reset search when changing tabs
   };
 
-  // Sidebar width for layout offset
-  const sidebarWidth = "16rem"; // 256px when expanded
-  const sidebarCollapsedWidth = "72px";
-
   return (
     <SidebarProvider>
-      <div className="min-h-screen w-full bg-background">
+      <div className="min-h-screen w-full flex bg-background">
         {/* Sidebar - Fixed position */}
         <AppSidebarRefactored 
           activeTab={activeTab}
@@ -210,11 +206,8 @@ const Index = () => {
           onShowReports={() => setShowReports(true)}
         />
 
-        {/* Main Content Area - With left margin to avoid sidebar overlap */}
-        <div 
-          className="min-h-screen flex flex-col transition-all duration-300"
-          style={{ marginLeft: sidebarWidth }}
-        >
+        {/* Main Content Area - Responsive margins */}
+        <div className="flex-1 min-h-screen flex flex-col transition-all duration-300 ml-[72px] lg:ml-64">
           {/* Header */}
           <header className="sticky top-0 z-30 bg-white border-b border-border/50 shadow-sm">
             <div className="px-6 py-4">

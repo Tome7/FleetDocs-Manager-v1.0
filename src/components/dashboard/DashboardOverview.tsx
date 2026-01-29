@@ -50,11 +50,11 @@ interface StatCardProps {
 
 const StatCard = ({ title, value, icon, variant, subtitle }: StatCardProps) => {
   const variantStyles = {
-    default: "bg-white border-border hover:border-primary/30",
-    success: "bg-white border-success/20 hover:border-success/40",
-    warning: "bg-white border-warning/20 hover:border-warning/40",
-    expired: "bg-white border-expired/20 hover:border-expired/40",
-    info: "bg-white border-primary/20 hover:border-primary/40",
+    default: "bg-card border-border hover:border-primary/30",
+    success: "bg-card border-success/20 hover:border-success/40",
+    warning: "bg-card border-warning/20 hover:border-warning/40",
+    expired: "bg-card border-expired/20 hover:border-expired/40",
+    info: "bg-card border-primary/20 hover:border-primary/40",
   };
 
   const iconContainerStyles = {
@@ -74,17 +74,17 @@ const StatCard = ({ title, value, icon, variant, subtitle }: StatCardProps) => {
   };
 
   return (
-    <Card className={`p-5 border shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 ${variantStyles[variant]}`}>
-      <div className="flex items-start justify-between">
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <p className="text-3xl font-bold tracking-tight text-foreground">{value}</p>
+    <Card className={`p-3 sm:p-4 lg:p-5 border shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 ${variantStyles[variant]}`}>
+      <div className="flex items-start justify-between gap-2">
+        <div className="space-y-0.5 sm:space-y-1 min-w-0 flex-1">
+          <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">{title}</p>
+          <p className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-foreground">{value}</p>
           {subtitle && (
-            <p className="text-xs text-muted-foreground">{subtitle}</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{subtitle}</p>
           )}
         </div>
-        <div className={`p-3 rounded-xl ${iconContainerStyles[variant]}`}>
-          <div className={iconStyles[variant]}>{icon}</div>
+        <div className={`p-2 sm:p-2.5 lg:p-3 rounded-lg sm:rounded-xl shrink-0 ${iconContainerStyles[variant]}`}>
+          <div className={`${iconStyles[variant]} [&>svg]:h-4 [&>svg]:w-4 sm:[&>svg]:h-5 sm:[&>svg]:w-5 lg:[&>svg]:h-6 lg:[&>svg]:w-6`}>{icon}</div>
         </div>
       </div>
     </Card>
@@ -155,21 +155,21 @@ export const DashboardOverview = () => {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex items-center justify-between bg-white p-4 rounded-xl border border-border/50 shadow-sm">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-card p-4 rounded-xl border border-border/50 shadow-sm">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">{t('navigation.dashboard')}</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">{t('navigation.dashboard')}</h2>
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {t('dashboard.systemOverview')}
           </p>
         </div>
-        <Badge className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary border-0 hover:bg-primary/15">
+        <Badge className="flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-primary/10 text-primary border-0 hover:bg-primary/15 shrink-0">
           <Activity className="h-3 w-3 animate-pulse" />
-          <span className="text-xs font-medium">{t('dashboard.synchronized')}</span>
+          <span className="text-xs font-medium hidden xs:inline">{t('dashboard.synchronized')}</span>
         </Badge>
       </div>
 
       {/* Main Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
         <StatCard
           title={t('dashboard.totalVehicles')}
           value={vehicles?.length || 0}
