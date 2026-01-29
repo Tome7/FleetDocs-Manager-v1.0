@@ -150,16 +150,16 @@ export const DashboardCharts = ({ vehicles }: DashboardChartsProps) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
       {/* Gráfico de Documentos */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base font-medium">
+          <CardTitle className="text-sm sm:text-base font-medium">
             {t('dashboard.documentStatus')}
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={200}>
+        <CardContent className="px-2 sm:px-6">
+          <ResponsiveContainer width="100%" height={180} className="sm:h-[200px]">
             <PieChart>
               <Pie
                 data={documentStatusData}
@@ -188,12 +188,12 @@ export const DashboardCharts = ({ vehicles }: DashboardChartsProps) => {
       {/* Gráfico de Veículos */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base font-medium">
+          <CardTitle className="text-sm sm:text-base font-medium">
             {t('dashboard.vehicleStatus')}
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={200}>
+        <CardContent className="px-2 sm:px-6">
+          <ResponsiveContainer width="100%" height={180} className="sm:h-[200px]">
             <PieChart>
               <Pie
                 data={vehicleStatusData}
@@ -222,12 +222,12 @@ export const DashboardCharts = ({ vehicles }: DashboardChartsProps) => {
       {/* Gráfico de Motoristas */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base font-medium">
+          <CardTitle className="text-sm sm:text-base font-medium">
             {t('dashboard.driverStatus')}
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={200}>
+        <CardContent className="px-2 sm:px-6">
+          <ResponsiveContainer width="100%" height={180} className="sm:h-[200px]">
             <PieChart>
               <Pie
                 data={driverStatusData}
@@ -255,14 +255,14 @@ export const DashboardCharts = ({ vehicles }: DashboardChartsProps) => {
 
       {/* Gráfico de Barras por Departamento */}
       {departmentData.length > 0 && (
-        <Card className="md:col-span-2 lg:col-span-3">
+        <Card className="col-span-1 sm:col-span-2 lg:col-span-3">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium">
+            <CardTitle className="text-sm sm:text-base font-medium">
               {t('dashboard.documentsByDepartment')}
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
+          <CardContent className="px-2 sm:px-6">
+            <ResponsiveContainer width="100%" height={200} className="sm:h-[250px]">
               <BarChart data={departmentData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis 

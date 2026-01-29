@@ -90,41 +90,28 @@ export function AppSidebarRefactored({
         "fixed left-0 top-0 h-screen z-40 border-r-0 transition-all duration-300 ease-out",
         "bg-gradient-to-b from-primary to-[hsl(220,85%,45%)]",
         "shadow-sidebar",
-        isCollapsed ? "w-[72px]" : "w-64"
+        "w-[72px] lg:w-64"
       )}
       collapsible="icon"
     >
       {/* Header */}
       <SidebarHeader className="border-b border-white/15 p-4">
         <div className="flex items-center justify-between">
-          {!isCollapsed && (
-            <div className="flex items-center gap-3 animate-fade-in">
-              <div className="h-10 w-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
-                <Car className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <h2 className="font-bold text-white text-base tracking-tight">FleetDocs</h2>
-                <p className="text-xs text-white/70 font-medium">Manager Pro</p>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
+              <Car className="h-5 w-5 text-white" />
             </div>
-          )}
-          {isCollapsed && (
-            <div className="flex justify-center w-full">
-              <div className="h-10 w-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <Car className="h-5 w-5 text-white" />
-              </div>
+            <div className="hidden lg:block animate-fade-in">
+              <h2 className="font-bold text-white text-base tracking-tight">FleetDocs</h2>
+              <p className="text-xs text-white/70 font-medium">Manager Pro</p>
             </div>
-          )}
+          </div>
         </div>
         <Button
           variant="ghost"
           size="icon"
           onClick={toggleSidebar}
-          className={cn(
-            "h-7 w-7 absolute transition-all duration-300",
-            "bg-white/10 hover:bg-white/25 text-white rounded-full",
-            isCollapsed ? "top-20 left-1/2 -translate-x-1/2" : "top-4 right-3"
-          )}
+          className="hidden lg:flex h-7 w-7 absolute top-4 right-3 bg-white/10 hover:bg-white/25 text-white rounded-full transition-all duration-300"
         >
           {isCollapsed ? (
             <ChevronRight className="h-4 w-4" />
@@ -138,7 +125,7 @@ export function AppSidebarRefactored({
         {/* Main Navigation */}
         <SidebarGroup>
           {!isCollapsed && (
-            <SidebarGroupLabel className="text-[10px] font-bold text-white/50 uppercase tracking-widest px-3 py-2 mb-1">
+            <SidebarGroupLabel className="text-[10px] font-bold text-white/50 uppercase tracking-widest px-3 py-2 mb-1 hidden lg:block">
               {t('navigation.title') || 'Navegação'}
             </SidebarGroupLabel>
           )}
@@ -167,14 +154,12 @@ export function AppSidebarRefactored({
                         !isActive && "group-hover:scale-105"
                       )} />
                       
-                      {!isCollapsed && (
-                        <span className="truncate text-sm">
-                          {item.title}
-                        </span>
-                      )}
+                      <span className="truncate text-sm hidden lg:inline">
+                        {item.title}
+                      </span>
 
-                      {isActive && !isCollapsed && (
-                        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />
+                      {isActive && (
+                        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary hidden lg:block" />
                       )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -184,10 +169,9 @@ export function AppSidebarRefactored({
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Tools Section */}
         <SidebarGroup className="mt-6">
           {!isCollapsed && (
-            <SidebarGroupLabel className="text-[10px] font-bold text-white/50 uppercase tracking-widest px-3 py-2 mb-1">
+            <SidebarGroupLabel className="text-[10px] font-bold text-white/50 uppercase tracking-widest px-3 py-2 mb-1 hidden lg:block">
               {t('navigation.tools') || 'Ferramentas'}
             </SidebarGroupLabel>
           )}
@@ -223,11 +207,9 @@ export function AppSidebarRefactored({
                       </span>
                     )}
                   </div>
-                  {!isCollapsed && (
-                    <span className="truncate text-sm">
-                      {alertCount > 0 ? `${alertCount} Alertas` : 'Alertas'}
-                    </span>
-                  )}
+                  <span className="truncate text-sm hidden lg:inline">
+                    {alertCount > 0 ? `${alertCount} Alertas` : 'Alertas'}
+                  </span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
@@ -242,9 +224,7 @@ export function AppSidebarRefactored({
                   tooltip={isCollapsed ? t('reports.title') : undefined}
                 >
                   <FileText className="h-5 w-5 shrink-0 group-hover:scale-105 transition-transform duration-200" />
-                  {!isCollapsed && (
-                    <span className="truncate text-sm">{t('reports.title') || 'Relatórios'}</span>
-                  )}
+                  <span className="truncate text-sm hidden lg:inline">{t('reports.title') || 'Relatórios'}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -254,21 +234,18 @@ export function AppSidebarRefactored({
 
       {/* Footer */}
       <SidebarFooter className="border-t border-white/15 p-4">
-        {!isCollapsed ? (
-          <div className="text-center">
-            <p className="text-[10px] text-white/50 font-medium">
-              © 2024 FleetDocs Manager
-            </p>
-            <div className="flex items-center justify-center gap-1.5 mt-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-[10px] text-white/60">Sistema Ativo</span>
-            </div>
+        <div className="hidden lg:block text-center">
+          <p className="text-[10px] text-white/50 font-medium">
+            © 2024 FleetDocs Manager
+          </p>
+          <div className="flex items-center justify-center gap-1.5 mt-1">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+            <span className="text-[10px] text-white/60">Sistema Ativo</span>
           </div>
-        ) : (
-          <div className="flex justify-center">
-            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          </div>
-        )}
+        </div>
+        <div className="flex lg:hidden justify-center">
+          <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
