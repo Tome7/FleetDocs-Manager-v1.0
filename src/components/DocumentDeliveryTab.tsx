@@ -433,85 +433,100 @@ export const DocumentDeliveryTab = () => {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t("delivery.operation")}</TableHead>
-                      <TableHead>{t("reports.document")}</TableHead>
-                      <TableHead>{t("drivers.name")}</TableHead>
-                      <TableHead>{t("common.date")}/{t("common.time")}</TableHead>
-                      <TableHead>{t("delivery.expectedReturn")}</TableHead>
-                      <TableHead>{t("delivery.actualReturn")}</TableHead>
-                      <TableHead>{t("common.notes")}</TableHead>
-                      <TableHead className="text-right">{t("common.actions")}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {group.records.map((record) => (
-                      <TableRow key={record.id}>
-                        <TableCell>
-                          <Badge className={record.operation_type === 'withdrawal' ? 'bg-warning text-warning-foreground' : 'bg-success text-success-foreground'}>
-                            {record.operation_type === 'withdrawal' ? (
-                              <><ArrowUpFromLine className="h-3 w-3 mr-1" /> {t("delivery.withdrawal")}</>
-                            ) : (
-                              <><ArrowDownToLine className="h-3 w-3 mr-1" /> {t("delivery.return")}</>
-                            )}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-muted-foreground" />
-                            <div>
-                              <div className="font-medium text-sm">{record.file_name}</div>
-                              <div className="text-xs text-muted-foreground">{record.file_code}</div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <div className="font-medium text-sm">{record.driver_name}</div>
-                            <div className="text-xs text-muted-foreground">{record.staff_no}</div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {format(new Date(record.operation_time), 'dd/MM/yyyy HH:mm')}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {record.expected_return_time 
-                            ? format(new Date(record.expected_return_time), 'dd/MM/yyyy HH:mm')
-                            : '-'}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {record.actual_return_time 
-                            ? format(new Date(record.actual_return_time), 'dd/MM/yyyy HH:mm')
-                            : '-'}
-                        </TableCell>
-                        <TableCell className="text-sm max-w-[200px] truncate">
-                          {record.notes || '-'}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex gap-1 justify-end">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => openEditDialog(record)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-destructive hover:text-destructive"
-                              onClick={() => setDeletingRecordId(record.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                {/* Group records by driver + operation + date */}
+                {(() => {
+                  const grouped = group.records.reduce((acc, record) => {
+                    const dateKey = format(new Date(record.operation_time), 'dd/MM/yyyy HH:mm');
+                    const key = `${record.driver_name}__${record.operation_type}__${dateKey}`;
+                    if (!acc[key]) {
+                      acc[key] = {
+                        driver_name: record.driver_name,
+                        staff_no: record.staff_no,
+                        operation_type: record.operation_type,
+                        operation_time: record.operation_time,
+                        expected_return_time: record.expected_return_time,
+                        actual_return_time: record.actual_return_time,
+                        notes: record.notes,
+                        records: [],
+                      };
+                    }
+                    acc[key].records.push(record);
+                    return acc;
+                  }, {} as Record<string, { driver_name: string; staff_no: string; operation_type: string; operation_time: string; expected_return_time: string | null; actual_return_time: string | null; notes: string | null; records: FlowRecord[] }>);
+
+                  return Object.entries(grouped).map(([key, grp]) => (
+                    <div key={key} className="mb-4 last:mb-0 border rounded-lg overflow-hidden">
+                      {/* Group header */}
+                      <div className="flex items-center gap-3 px-4 py-3 bg-muted/50 border-b">
+                        <Badge className={grp.operation_type === 'withdrawal' ? 'bg-warning text-warning-foreground' : 'bg-success text-success-foreground'}>
+                          {grp.operation_type === 'withdrawal' ? (
+                            <><ArrowUpFromLine className="h-3 w-3 mr-1" /> {t("delivery.withdrawal")}</>
+                          ) : (
+                            <><ArrowDownToLine className="h-3 w-3 mr-1" /> {t("delivery.return")}</>
+                          )}
+                        </Badge>
+                        <div className="flex-1">
+                          <span className="font-semibold text-sm">{grp.driver_name}</span>
+                          <span className="text-xs text-muted-foreground ml-2">({grp.staff_no})</span>
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {format(new Date(grp.operation_time), 'dd/MM/yyyy HH:mm')}
+                        </span>
+                        {grp.notes && (
+                          <span className="text-xs text-muted-foreground italic max-w-[150px] truncate">
+                            {grp.notes}
+                          </span>
+                        )}
+                      </div>
+                      {/* Documents table */}
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>{t("reports.document")}</TableHead>
+                            <TableHead>{t("delivery.expectedReturn")}</TableHead>
+                            <TableHead>{t("delivery.actualReturn")}</TableHead>
+                            <TableHead className="text-right">{t("common.actions")}</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {grp.records.map((record) => (
+                            <TableRow key={record.id}>
+                              <TableCell>
+                                <div className="flex items-center gap-2">
+                                  <FileText className="h-4 w-4 text-muted-foreground" />
+                                  <div>
+                                    <div className="font-medium text-sm">{record.file_name}</div>
+                                    <div className="text-xs text-muted-foreground">{record.file_code}</div>
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                {record.expected_return_time 
+                                  ? format(new Date(record.expected_return_time), 'dd/MM/yyyy HH:mm')
+                                  : '-'}
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                {record.actual_return_time 
+                                  ? format(new Date(record.actual_return_time), 'dd/MM/yyyy HH:mm')
+                                  : '-'}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex gap-1 justify-end">
+                                  <Button variant="ghost" size="icon" onClick={() => openEditDialog(record)}>
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                  <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => setDeletingRecordId(record.id)}>
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  ));
+                })()}
                 
                 <div className="flex gap-2 mt-4 pt-4 border-t justify-end">
                   <Button
