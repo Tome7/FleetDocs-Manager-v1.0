@@ -845,7 +845,7 @@ export const ReportsDialog = ({ open, onClose }: ReportsDialogProps) => {
             </div>
           </TabsContent>
 
-          {/* 5. FLUXO */}
+          {/* 5. FLUXO - Agrupado por Motorista + Veículo + Data */}
           <TabsContent value="flow" className="space-y-4">
             <div className="flex justify-between items-center">
               <p className="text-sm text-muted-foreground">{flowRecords?.length || 0} {t("reports.flowRecords")}</p>
@@ -853,32 +853,65 @@ export const ReportsDialog = ({ open, onClose }: ReportsDialogProps) => {
                 <FileSpreadsheet className="h-4 w-4 mr-2" /> {t("reports.exportExcel")}
               </Button>
             </div>
-            <div className="border rounded-lg overflow-hidden">
-               <table className="w-full text-sm">
-                 <thead className="bg-muted">
-                    <tr>
-                      <th className="p-2 text-left">{t("drivers.name")}</th>
-                      <th className="p-2 text-left">{t("reports.document")}</th>
-                      <th className="p-2 text-left">{t("delivery.operation")}</th>
-                      <th className="p-2 text-left">{t("common.date")}</th>
-                    </tr>
-                 </thead>
-                 <tbody>
-                    {flowRecords?.map((rec: any, i: number) => (
-                      <tr key={i} className="border-t">
-                         <td className="p-2">{rec.driver_name}</td>
-                         <td className="p-2">{rec.file_code}</td>
-                         <td className="p-2">
-                           {rec.operation_type === 'withdrawal' 
-                             ? <span className="text-warning">{t("delivery.withdrawal")}</span> 
-                             : <span className="text-success">{t("delivery.return")}</span>}
-                         </td>
-                         <td className="p-2">{new Date(rec.operation_time).toLocaleString()}</td>
+            {(() => {
+              if (!flowRecords || flowRecords.length === 0) {
+                return <p className="text-center text-muted-foreground py-4">{t("common.noData")}</p>;
+              }
+              // Group by driver + operation_type + date (ignoring seconds)
+              const grouped: Record<string, { driver_name: string; staff_no: string; operation_type: string; license_plate: string; operation_time: string; records: any[] }> = {};
+              flowRecords.forEach((rec: any) => {
+                const dateStr = new Date(rec.operation_time).toLocaleDateString();
+                const key = `${rec.driver_name}__${rec.operation_type}__${dateStr}__${rec.license_plate || ''}`;
+                if (!grouped[key]) {
+                  grouped[key] = {
+                    driver_name: rec.driver_name,
+                    staff_no: rec.staff_no,
+                    operation_type: rec.operation_type,
+                    license_plate: rec.license_plate || '-',
+                    operation_time: rec.operation_time,
+                    records: [],
+                  };
+                }
+                grouped[key].records.push(rec);
+              });
+
+              return Object.entries(grouped).map(([key, grp]) => (
+                <div key={key} className="border rounded-lg overflow-hidden mb-3 last:mb-0">
+                  <div className="flex items-center gap-3 px-4 py-2.5 bg-muted/50">
+                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                      grp.operation_type === 'withdrawal' ? 'bg-warning/15 text-warning' : 'bg-success/15 text-success'
+                    }`}>
+                      {grp.operation_type === 'withdrawal' ? t("delivery.withdrawal") : t("delivery.return")}
+                    </span>
+                    <span className="font-semibold text-sm">{grp.driver_name}</span>
+                    {grp.staff_no && <span className="text-xs text-muted-foreground">({grp.staff_no})</span>}
+                    {grp.license_plate !== '-' && (
+                      <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">{grp.license_plate}</span>
+                    )}
+                    <span className="ml-auto text-xs text-muted-foreground">{new Date(grp.operation_time).toLocaleDateString()}</span>
+                    <span className="text-xs bg-muted px-2 py-0.5 rounded">{grp.records.length} docs</span>
+                  </div>
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted/30">
+                      <tr>
+                        <th className="p-2 text-left">{t("reports.document")}</th>
+                        <th className="p-2 text-left">{t("documents.documentName")}</th>
+                        <th className="p-2 text-left">{t("common.time")}</th>
                       </tr>
-                    ))}
-                 </tbody>
-               </table>
-            </div>
+                    </thead>
+                    <tbody>
+                      {grp.records.map((rec: any, i: number) => (
+                        <tr key={i} className="border-t">
+                          <td className="p-2 font-medium">{rec.file_code}</td>
+                          <td className="p-2">{rec.file_name || '-'}</td>
+                          <td className="p-2 text-muted-foreground">{new Date(rec.operation_time).toLocaleTimeString()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ));
+            })()}
           </TabsContent>
 
         </Tabs>
