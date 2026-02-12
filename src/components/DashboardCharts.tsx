@@ -158,15 +158,15 @@ export const DashboardCharts = ({ vehicles }: DashboardChartsProps) => {
             {t('dashboard.documentStatus')}
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-2 sm:px-6">
-          <ResponsiveContainer width="100%" height={180} className="sm:h-[200px]">
+        <CardContent className="px-2 sm:px-6 overflow-visible">
+          <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
                 data={documentStatusData}
                 cx="50%"
-                cy="50%"
-                innerRadius={50}
-                outerRadius={80}
+                cy="45%"
+                innerRadius={45}
+                outerRadius={75}
                 paddingAngle={2}
                 dataKey="value"
               >
@@ -192,15 +192,15 @@ export const DashboardCharts = ({ vehicles }: DashboardChartsProps) => {
             {t('dashboard.vehicleStatus')}
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-2 sm:px-6">
-          <ResponsiveContainer width="100%" height={180} className="sm:h-[200px]">
+        <CardContent className="px-2 sm:px-6 overflow-visible">
+          <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
                 data={vehicleStatusData}
                 cx="50%"
-                cy="50%"
-                innerRadius={50}
-                outerRadius={80}
+                cy="45%"
+                innerRadius={45}
+                outerRadius={75}
                 paddingAngle={2}
                 dataKey="value"
               >
@@ -226,15 +226,15 @@ export const DashboardCharts = ({ vehicles }: DashboardChartsProps) => {
             {t('dashboard.driverStatus')}
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-2 sm:px-6">
-          <ResponsiveContainer width="100%" height={180} className="sm:h-[200px]">
+        <CardContent className="px-2 sm:px-6 overflow-visible">
+          <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
                 data={driverStatusData}
                 cx="50%"
-                cy="50%"
-                innerRadius={50}
-                outerRadius={80}
+                cy="45%"
+                innerRadius={45}
+                outerRadius={75}
                 paddingAngle={2}
                 dataKey="value"
               >
